@@ -8,384 +8,185 @@
 <title>Sami · Yeppo</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: #0d0d0d;
-    color: #fff;
-    height: 100dvh;
-    width: 100vw;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    user-select: none;
-    -webkit-user-select: none;
+    background: #0d0d0d; color: #fff;
+    height: 100dvh; width: 100vw; overflow: hidden;
+    display: flex; flex-direction: column;
+    user-select: none; -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-
-  /* Header */
-  .header {
-    padding: 24px 20px 8px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .header .logo {
-    font-size: 14px;
-    letter-spacing: 3px;
-    color: #666;
-    text-transform: uppercase;
-  }
-  .header h1 {
-    font-size: 28px;
-    font-weight: 600;
-    margin-top: 4px;
+  .header { padding: 24px 20px 8px; text-align: center; flex-shrink: 0; }
+  .header .logo { font-size: 14px; letter-spacing: 3px; color: #666; text-transform: uppercase; }
+  .header h1 { font-size: 28px; font-weight: 600; margin-top: 4px;
     background: linear-gradient(135deg, #ff6b9d, #c44dff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Status Indicator */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px 20px;
-    flex-shrink: 0;
-  }
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #333;
-    transition: all 0.3s;
-  }
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .status-bar { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 20px; flex-shrink: 0; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; transition: all 0.3s; }
   .status-dot.active { background: #ff6b9d; box-shadow: 0 0 12px #ff6b9d; }
   .status-dot.thinking { background: #c44dff; box-shadow: 0 0 12px #c44dff; animation: pulse 1.5s infinite; }
   .status-dot.speaking { background: #00e676; box-shadow: 0 0 12px #00e676; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-  .status-text {
-    font-size: 13px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: color 0.3s;
-  }
-  .status-text.active { color: #ff6b9d; }
-  .status-text.thinking { color: #c44dff; }
-  .status-text.speaking { color: #00e676; }
-
-  /* Transcript */
-  .transcript {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-  }
-  .msg {
-    max-width: 90%;
-    padding: 14px 18px;
-    border-radius: 20px;
-    font-size: 17px;
-    line-height: 1.4;
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .msg.user {
-    align-self: flex-end;
-    background: #1a1a2e;
-    color: #ccc;
-    border-bottom-right-radius: 6px;
-  }
-  .msg.assistant {
-    align-self: flex-start;
-    background: linear-gradient(135deg, #2d1b3d, #1f1a3d);
-    color: #fff;
-    border-bottom-left-radius: 6px;
-  }
-  .msg.system {
-    align-self: center;
-    background: transparent;
-    color: #555;
-    font-size: 13px;
-    padding: 4px 12px;
-  }
-  .msg-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-    opacity: 0.5;
-  }
-
-  /* Mic Button */
-  .mic-area {
-    flex-shrink: 0;
-    padding: 20px 20px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .mic-btn {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 3px solid #333;
-    background: #1a1a1a;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-  }
-  .mic-btn:active, .mic-btn.pressed {
-    border-color: #ff6b9d;
-    background: #2d1a25;
-    transform: scale(0.95);
-  }
-  .mic-btn svg {
-    width: 40px;
-    height: 40px;
-    fill: #555;
-    transition: fill 0.2s;
-  }
-  .mic-btn:active svg, .mic-btn.pressed svg {
-    fill: #ff6b9d;
-  }
-  .mic-hint {
-    font-size: 12px;
-    color: #444;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  /* Error banner */
-  .error-banner {
-    background: #3d1111;
-    color: #ff6b6b;
-    text-align: center;
-    padding: 10px;
-    font-size: 13px;
-    display: none;
-    flex-shrink: 0;
-  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .status-text { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+  .status-text.active { color: #ff6b9d; } .status-text.thinking { color: #c44dff; } .status-text.speaking { color: #00e676; }
+  .transcript { flex: 1; overflow-y: auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+  .msg { max-width: 90%; padding: 14px 18px; border-radius: 20px; font-size: 17px; line-height: 1.4; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+  .msg.user { align-self: flex-end; background: #1a1a2e; color: #ccc; border-bottom-right-radius: 6px; }
+  .msg.assistant { align-self: flex-start; background: linear-gradient(135deg, #2d1b3d, #1f1a3d); color: #fff; border-bottom-left-radius: 6px; }
+  .msg-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; opacity: 0.5; }
+  .mic-area { flex-shrink: 0; padding: 20px 20px 40px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .mic-btn { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #333; background: #1a1a1a; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; outline: none; }
+  .mic-btn:active, .mic-btn.pressed { border-color: #ff6b9d; background: #2d1a25; transform: scale(0.95); }
+  .mic-btn svg { width: 40px; height: 40px; fill: #555; transition: fill 0.2s; }
+  .mic-btn:active svg, .mic-btn.pressed svg { fill: #ff6b9d; }
+  .mic-hint { font-size: 12px; color: #444; letter-spacing: 1px; text-transform: uppercase; }
+  .error-banner { background: #3d1111; color: #ff6b6b; text-align: center; padding: 10px; font-size: 13px; display: none; flex-shrink: 0; }
   .error-banner.show { display: block; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">Yeppo</div>
-  <h1>Sami</h1>
-</div>
+<div class="header"><div class="logo">Yeppo</div><h1>Sami</h1></div>
 
 <div class="status-bar">
-  <div class="status-dot" id="statusDot"></div>
-  <span class="status-text" id="statusText">Lista para ayudar</span>
+  <div class="status-dot" id="dot"></div>
+  <span class="status-text" id="stxt">Lista para ayudar</span>
 </div>
 
-<div class="error-banner" id="errorBanner"></div>
+<div class="error-banner" id="err"></div>
 
-<div class="transcript" id="transcript">
-  <div class="msg assistant">
-    <div class="msg-label">Sami</div>
-    ¡Hola! Soy Sami, la asistente de Yeppo. Pregúntame lo que quieras sobre productos coreanos, horarios, o lo que necesites 😊
-  </div>
+<div class="transcript" id="ts">
+  <div class="msg assistant"><div class="msg-label">Sami</div>¡Hola! Soy Sami, la asistente de Yeppo. Pregúntame lo que quieras sobre productos coreanos, horarios, o lo que necesites 😊</div>
 </div>
 
 <div class="mic-area">
-  <button class="mic-btn" id="micBtn" title="Mantén presionado para hablar">
+  <button class="mic-btn" id="btn" title="Mantén presionado para hablar">
     <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>
   </button>
   <div class="mic-hint">Mantén presionado para hablar</div>
 </div>
 
 <script>
-// ── State ──
-let pc = null;
-let dc = null;
-let audioEl = null;
-let localStream = null;
-let isPressed = false;
-let isConnected = false;
-let statusEl, dotEl, transcriptEl, micBtn, errorBanner, statusTextEl;
+// ── State
+let pc, dc, audioEl, localStream;
+let isPressed = false, isConnected = false;
 
-// ── DOM refs ──
-statusEl = document.getElementById('statusText');
-dotEl = document.getElementById('statusDot');
-transcriptEl = document.getElementById('transcript');
-micBtn = document.getElementById('micBtn');
-errorBanner = document.getElementById('errorBanner');
-statusTextEl = document.getElementById('statusText');
+// ── DOM
+const dot = document.getElementById('dot');
+const stxt = document.getElementById('stxt');
+const ts = document.getElementById('ts');
+const btn = document.getElementById('btn');
+const errEl = document.getElementById('err');
 
-// ── Helpers ──
-function setStatus(state) {
-  const map = {
-    idle: ['Lista para ayudar', ''],
-    connecting: ['Conectando...', 'thinking'],
-    listening: ['Escuchando...', 'active'],
-    thinking: ['Pensando...', 'thinking'],
-    speaking: ['Respondiendo...', 'speaking'],
-    error: ['Error de conexión', '']
+function setStatus(s) {
+  const m = {
+    idle: ['Lista para ayudar',''],
+    connecting: ['Conectando...','thinking'],
+    listening: ['Escuchando...','active'],
+    thinking: ['Pensando...','thinking'],
+    speaking: ['Respondiendo...','speaking']
   };
-  const [text, dotClass] = map[state] || map.idle;
-  statusEl.textContent = text;
-  statusEl.className = 'status-text ' + (dotClass || '');
-  dotEl.className = 'status-dot' + (dotClass ? ' ' + dotClass : '');
+  const [t,c] = m[s] || m.idle;
+  stxt.textContent = t; stxt.className = 'status-text ' + (c || '');
+  dot.className = 'status-dot' + (c ? ' '+c : '');
 }
 
-function addMessage(text, role) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  if (role === 'assistant') {
-    const label = document.createElement('div');
-    label.className = 'msg-label';
-    label.textContent = 'Sami';
-    div.appendChild(label);
-  } else if (role === 'user') {
-    const label = document.createElement('div');
-    label.className = 'msg-label';
-    label.textContent = 'Tú';
-    div.appendChild(label);
-  }
-  div.appendChild(document.createTextNode(text));
-  transcriptEl.appendChild(div);
-  transcriptEl.scrollTop = transcriptEl.scrollHeight;
-  return div;
+function addMsg(text, role) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  const l = document.createElement('div');
+  l.className = 'msg-label';
+  l.textContent = role === 'assistant' ? 'Sami' : 'Tú';
+  d.appendChild(l);
+  d.appendChild(document.createTextNode(text));
+  ts.appendChild(d);
+  ts.scrollTop = ts.scrollHeight;
+  return d;
 }
 
-function showError(msg) {
-  errorBanner.textContent = msg;
-  errorBanner.classList.add('show');
-  setTimeout(() => errorBanner.classList.remove('show'), 4000);
+function showErr(msg) {
+  errEl.textContent = msg; errEl.classList.add('show');
+  setTimeout(() => errEl.classList.remove('show'), 5000);
 }
 
-// ── Audio output ──
-async function ensureAudio() {
-  if (!audioEl) {
-    audioEl = new Audio();
-    audioEl.autoplay = true;
-  }
-}
-
-// ── WebRTC Connection ──
-async function connectRealtime() {
+// ── WebRTC connect
+async function connect() {
   setStatus('connecting');
-
   try {
-    // Get ephemeral token
-    const res = await fetch('/token', { method: 'POST' });
-    if (!res.ok) throw new Error('Failed to get token');
-    const { client_secret } = await res.json();
+    // 1. Get ephemeral token from our backend
+    const tr = await fetch('/token', { method: 'POST' });
+    if (!tr.ok) throw new Error('Backend token error ' + tr.status);
+    const { value: EPHEMERAL_KEY } = await tr.json();
 
-    // Create peer connection
+    // 2. Create RTCPeerConnection
     pc = new RTCPeerConnection();
 
-    // Audio output
-    await ensureAudio();
-    pc.ontrack = (event) => {
-      if (audioEl) audioEl.srcObject = event.streams[0];
-    };
+    // 3. Audio output
+    audioEl = document.createElement('audio');
+    audioEl.autoplay = true;
+    pc.ontrack = e => { audioEl.srcObject = e.streams[0]; };
 
-    // Data channel for events
+    // 4. Data channel for events
     dc = pc.createDataChannel('oai-events');
-    dc.onmessage = (e) => {
-      const event = JSON.parse(e.data);
-      handleEvent(event);
-    };
+    dc.onmessage = e => handleEvent(JSON.parse(e.data));
 
-    // Add local audio track
+    // 5. Get mic
     localStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-        sampleRate: 24000
-      }
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
     });
     pc.addTrack(localStream.getAudioTracks()[0]);
 
-    // Offer/Answer
+    // 6. Offer
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
-    const sdpRes = await fetch(`https://api.openai.com/v1/realtime/calls?client_secret=${encodeURIComponent(client_secret)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/sdp' },
-      body: offer.sdp
-    });
-
-    if (!sdpRes.ok) throw new Error('SDP exchange failed');
+    // 7. SDP exchange with OpenAI Realtime API
+    const sdpRes = await fetch(
+      `https://api.openai.com/v1/realtime/calls?client_secret=${encodeUR…(EPHEMERAL_KEY)}`,
+      { method: 'POST', headers: { 'Content-Type': 'application/sdp' }, body: offer.sdp }
+    );
+    if (!sdpRes.ok) throw new Error('SDP error ' + sdpRes.status);
     const answerSdp = await sdpRes.text();
     await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
 
     isConnected = true;
     setStatus('idle');
 
-    // Send initial greeting
-    const greeting = {
-      type: 'conversation.item.create',
-      item: {
-        type: 'message',
-        role: 'user',
-        content: [{ type: 'input_text', text: '(El cliente acaba de activar el asistente. Salúdalo brevemente y preséntate)' }]
-      }
-    };
-    dc.send(JSON.stringify(greeting));
-    dc.send(JSON.stringify({ type: 'response.create' }));
-
-  } catch (err) {
-    console.error('Connection error:', err);
-    setStatus('error');
-    showError('Error de conexión. Recarga la página.');
-    isConnected = false;
+  } catch (e) {
+    console.error(e);
+    setStatus('idle'); dot.className = 'status-dot';
+    showErr('Error de conexión: ' + e.message);
+    cleanup();
   }
 }
 
-// ── Event handling from OpenAI Realtime ──
-let currentAssistantText = '';
-let assistantMsgDiv = null;
+// ── Event handler
+let curText = '', curDiv = null;
 
-function handleEvent(event) {
-  switch (event.type) {
+function handleEvent(ev) {
+  switch (ev.type) {
     case 'response.audio_transcript.delta':
-      // Streaming transcript of assistant speech
-      currentAssistantText += event.delta;
-      if (!assistantMsgDiv) {
-        assistantMsgDiv = addMessage('', 'assistant');
+      curText += ev.delta;
+      if (!curDiv) curDiv = addMsg('', 'assistant');
+      // update last text node
+      const cn = curDiv.childNodes;
+      for (let i = cn.length-1; i >= 0; i--) {
+        if (cn[i].nodeType === 3) { cn[i].textContent = curText; break; }
       }
-      assistantMsgDiv.childNodes.forEach(c => {
-        if (c.nodeType === 3) c.textContent = currentAssistantText;
-      });
       break;
 
     case 'response.audio_transcript.done':
-      // Final transcript
-      currentAssistantText = event.transcript || currentAssistantText;
-      if (assistantMsgDiv) {
-        assistantMsgDiv.childNodes.forEach(c => {
-          if (c.nodeType === 3) c.textContent = currentAssistantText;
-        });
-      } else if (currentAssistantText) {
-        addMessage(currentAssistantText, 'assistant');
+      if (curDiv && ev.transcript) {
+        for (let i = curDiv.childNodes.length-1; i >= 0; i--) {
+          if (curDiv.childNodes[i].nodeType === 3) { curDiv.childNodes[i].textContent = ev.transcript; break; }
+        }
       }
-      currentAssistantText = '';
-      assistantMsgDiv = null;
+      curText = ''; curDiv = null;
       break;
 
     case 'conversation.item.input_audio_transcription.completed':
-      // User speech transcript
-      if (event.transcript) {
-        addMessage(event.transcript, 'user');
-      }
+      if (ev.transcript) addMsg(ev.transcript, 'user');
       break;
 
     case 'response.audio.delta':
@@ -393,13 +194,9 @@ function handleEvent(event) {
       break;
 
     case 'response.audio.done':
-      setStatus('idle');
-      break;
-
     case 'response.done':
       setStatus('idle');
-      currentAssistantText = '';
-      assistantMsgDiv = null;
+      curText = ''; curDiv = null;
       break;
 
     case 'input_audio_buffer.speech_started':
@@ -411,88 +208,57 @@ function handleEvent(event) {
       break;
 
     case 'error':
-      console.error('Realtime error:', event.error);
-      showError(event.error?.message || 'Error en la conversación');
-      setStatus('idle');
+      console.error(ev.error);
+      showErr(ev.error?.message || 'Error');
       break;
   }
 }
 
-// ── Push to talk ──
-micBtn.addEventListener('pointerdown', async (e) => {
+function cleanup() {
+  try { pc?.close(); } catch(e){}
+  try { localStream?.getTracks().forEach(t => t.stop()); } catch(e){}
+  pc = null; dc = null; localStream = null; audioEl = null; isConnected = false;
+}
+
+// ── Push-to-talk
+btn.addEventListener('pointerdown', async e => {
   e.preventDefault();
   if (isPressed) return;
   isPressed = true;
-  micBtn.classList.add('pressed');
+  btn.classList.add('pressed');
 
-  if (!isConnected) {
-    await connectRealtime();
-  }
-
-  if (dc && dc.readyState === 'open') {
-    // Start recording (unmute)
-    if (localStream) {
-      localStream.getAudioTracks().forEach(t => t.enabled = true);
-    }
-    setStatus('listening');
-  }
+  if (!isConnected) await connect();
+  localStream?.getAudioTracks().forEach(t => t.enabled = true);
+  setStatus('listening');
 });
 
-micBtn.addEventListener('pointerup', async (e) => {
+btn.addEventListener('pointerup', e => {
   e.preventDefault();
   if (!isPressed) return;
   isPressed = false;
-  micBtn.classList.remove('pressed');
-
-  if (dc && dc.readyState === 'open') {
-    // Mute local audio
-    if (localStream) {
-      localStream.getAudioTracks().forEach(t => t.enabled = false);
-    }
-    setStatus('thinking');
-  }
+  btn.classList.remove('pressed');
+  localStream?.getAudioTracks().forEach(t => t.enabled = false);
+  setStatus('thinking');
 });
 
-// Handle pointer leaving the button while pressed
-micBtn.addEventListener('pointerleave', () => {
-  if (isPressed) {
-    micBtn.classList.remove('pressed');
-    if (localStream) {
-      localStream.getAudioTracks().forEach(t => t.enabled = false);
-    }
-    setStatus('thinking');
-    isPressed = false;
-  }
+btn.addEventListener('pointerleave', () => {
+  if (!isPressed) return;
+  isPressed = false;
+  btn.classList.remove('pressed');
+  localStream?.getAudioTracks().forEach(t => t.enabled = false);
+  setStatus('thinking');
 });
 
-// Keyboard support (spacebar for desktop testing)
-document.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' && document.activeElement === document.body) {
-    e.preventDefault();
-    micBtn.dispatchEvent(new PointerEvent('pointerdown'));
-  }
+// Keyboard for desktop testing
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && document.activeElement === document.body) { e.preventDefault(); btn.dispatchEvent(new PointerEvent('pointerdown')); }
 });
-document.addEventListener('keyup', (e) => {
-  if (e.code === 'Space') {
-    e.preventDefault();
-    micBtn.dispatchEvent(new PointerEvent('pointerup'));
-  }
+document.addEventListener('keyup', e => {
+  if (e.code === 'Space') { e.preventDefault(); btn.dispatchEvent(new PointerEvent('pointerup')); }
 });
 
-// ── Init ──
-// Pre-connect on page load for faster first interaction
-window.addEventListener('load', () => {
-  // Don't auto-connect to save costs - connect on first press
-  setStatus('idle');
-});
-
-// Handle page unload
-window.addEventListener('beforeunload', () => {
-  if (pc) pc.close();
-  if (localStream) {
-    localStream.getTracks().forEach(t => t.stop());
-  }
-});
+window.addEventListener('beforeunload', cleanup);
+setStatus('idle');
 </script>
 </body>
 </html>
