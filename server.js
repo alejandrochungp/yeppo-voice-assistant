@@ -1,9 +1,10 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const KEY = process.env.OPENAI_API_KEY;
 
 const app = express();
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 
